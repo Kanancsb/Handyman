@@ -1,16 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HandymanApp</title>
+    <title>Handyman Tools</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
   </head>
 
   <body>
+    <% if flash[:notice].present? || flash[:alert].present? %>
+      <div class="flash-wrap">
+        <% if flash[:notice].present? %>
+          <p class="flash flash-notice"><%= flash[:notice] %></p>
+        <% end %>
+        <% if flash[:alert].present? %>
+          <p class="flash flash-alert"><%= flash[:alert] %></p>
+        <% end %>
+      </div>
+    <% end %>
+
     <%= yield %>
   </body>
 </html>

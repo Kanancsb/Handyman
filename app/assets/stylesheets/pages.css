@@ -1,0 +1,145 @@
+body {
+  margin: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(180deg, #f3f6fa 0%, #eef4ff 100%);
+  color: #1a1f2b;
+}
+
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 36px 20px 56px;
+}
+
+.hero,
+.panel,
+.features {
+  background: #ffffff;
+  border: 1px solid #d6deea;
+  border-radius: 16px;
+  padding: 26px;
+  box-shadow: 0 8px 24px rgba(40, 60, 100, 0.08);
+}
+
+.features {
+  margin-top: 18px;
+}
+
+.eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 12px;
+  font-weight: 700;
+  color: #2a5fa8;
+}
+
+h1 {
+  margin: 10px 0 12px;
+  font-size: 34px;
+  line-height: 1.2;
+}
+
+h2 {
+  margin-top: 0;
+}
+
+.lead {
+  margin: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #36435f;
+}
+
+.features ul {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.8;
+}
+
+.transform-form {
+  margin-top: 22px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+label {
+  font-weight: 600;
+}
+
+select,
+input[type="file"] {
+  border: 1px solid #bfcde0;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 15px;
+  background: #ffffff;
+}
+
+.button {
+  display: inline-block;
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 20px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button-primary {
+  background: #1f5ea9;
+  color: #ffffff;
+}
+
+.button-primary:hover {
+  background: #1a4f8f;
+}
+
+.helper-note {
+  margin-top: 14px;
+  color: #5a6884;
+}
+
+.back-link {
+  margin-top: 16px;
+}
+
+.flash-wrap {
+  max-width: 900px;
+  margin: 16px auto 0;
+  padding: 0 20px;
+}
+
+.flash {
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 0 0 10px;
+  font-weight: 600;
+}
+
+.flash-notice {
+  background: #e5f6ec;
+  color: #1a6a31;
+  border: 1px solid #9ad0ac;
+}
+
+.flash-alert {
+  background: #ffe8e8;
+  color: #8f2222;
+  border: 1px solid #e4a4a4;
+}
+
+@media (max-width: 640px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .page {
+    padding-top: 24px;
+  }
+}
