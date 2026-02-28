@@ -1,0 +1,34 @@
+<main class="page page-convert">
+  <section class="panel">
+    <p class="eyebrow">Convert Files</p>
+    <h1>Convert and download your file</h1>
+    <p class="lead">
+      Upload a file, choose its source type, pick the target format, and download the converted result.
+    </p>
+
+    <%= form_with url: convert_files_path, method: :post, multipart: true, local: true, class: "convert-form" do %>
+      <div class="form-row">
+        <%= label_tag :file, "Choose File" %>
+        <%= file_field_tag :file, required: true %>
+      </div>
+
+      <div class="form-row">
+        <%= label_tag :source_format, "Source Type" %>
+        <%= select_tag :source_format, options_for_select(ConvertFilesController::SOURCE_OPTIONS, params[:source_format]), required: true %>
+      </div>
+
+      <div class="form-row">
+        <%= label_tag :target_format, "Convert To" %>
+        <%= select_tag :target_format, options_for_select(ConvertFilesController::TARGET_OPTIONS, params[:target_format]), required: true %>
+      </div>
+
+      <%= submit_tag "Convert and Download", class: "button button-primary" %>
+    <% end %>
+
+    <p class="helper-note">
+      Tip: for PDF output from images, transparent areas become white.
+    </p>
+  </section>
+
+  <p class="back-link"><%= link_to "Back to Home", root_path %></p>
+</main>

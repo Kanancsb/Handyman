@@ -2,7 +2,7 @@ require "open3"
 require "tmpdir"
 require "fileutils"
 
-class FileTransformer
+class FileConverter
   class ValidationError < StandardError; end
   class UnsupportedConversionError < StandardError; end
   class ConversionError < StandardError; end
@@ -28,9 +28,9 @@ class FileTransformer
   def call
     validate_request!
 
-    Dir.mktmpdir("file-transform-") do |dir|
+    Dir.mktmpdir("file-convert-") do |dir|
       input_path = persist_upload(dir)
-      output_path = transform(input_path, dir)
+      output_path = convert(input_path, dir)
       output_extension = File.extname(output_path).delete(".").downcase
 
       Result.new(
@@ -71,34 +71,34 @@ class FileTransformer
     path
   end
 
-  def transform(input_path, dir)
+  def convert(input_path, dir)
     case source_format
     when "word"
-      transform_from_word(input_path, dir)
+      convert_from_word(input_path, dir)
     when "pdf"
-      transform_from_pdf(input_path, dir)
+      convert_from_pdf(input_path, dir)
     when "jpg", "png"
-      transform_from_image(input_path, dir)
+      convert_from_image(input_path, dir)
     else
       raise UnsupportedConversionError,
             "This conversion is not supported yet: #{source_format} -> #{target_format}."
     end
   end
 
-  def transform_from_word(input_path, dir)
+  def convert_from_word(input_path, dir)
     pdf_path = convert_word_to_pdf(input_path, dir)
     return pdf_path if target_format == "pdf"
 
     convert_pdf_to_image(pdf_path, dir, target_format)
   end
 
-  def transform_from_pdf(input_path, dir)
+  def convert_from_pdf(input_path, dir)
     return input_path if target_format == "pdf"
 
     convert_pdf_to_image(input_path, dir, target_format)
   end
 
-  def transform_from_image(input_path, dir)
+  def convert_from_image(input_path, dir)
     output_path = File.join(dir, "converted.#{target_format}")
 
     case target_format
