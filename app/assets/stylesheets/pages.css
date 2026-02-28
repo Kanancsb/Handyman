@@ -81,6 +81,22 @@ input[type="file"] {
   background: #ffffff;
 }
 
+.hidden-file-input {
+  display: none;
+}
+
+.file-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.file-name {
+  color: #465575;
+  font-size: 14px;
+}
+
 .button {
   display: inline-block;
   border: 0;
@@ -98,6 +114,16 @@ input[type="file"] {
 
 .button-primary:hover {
   background: #1a4f8f;
+}
+
+.button-secondary {
+  background: #f4f7fc;
+  color: #173864;
+  border: 1px solid #bfcde0;
+}
+
+.button-secondary:hover {
+  background: #e8effa;
 }
 
 .helper-note {

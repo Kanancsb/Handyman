@@ -8,8 +8,11 @@
 
     <%= form_with url: convert_files_path, method: :post, multipart: true, local: true, class: "convert-form" do %>
       <div class="form-row">
-        <%= label_tag :file, "Choose File" %>
-        <%= file_field_tag :file, required: true, id: "file_input" %>
+        <div class="file-picker-wrap">
+          <button type="button" id="file_picker_button" class="button button-secondary">Upload File</button>
+          <span id="file_name_display" class="file-name">No file selected</span>
+        </div>
+        <%= file_field_tag :file, required: true, id: "file_input", class: "hidden-file-input" %>
       </div>
 
       <div class="form-row">
@@ -57,21 +60,28 @@
 
     function bindAutoDetect() {
       var fileInput = document.getElementById("file_input");
+      var filePickerButton = document.getElementById("file_picker_button");
+      var fileNameDisplay = document.getElementById("file_name_display");
       var sourceSelect = document.getElementById("source_format_select");
       var statusText = document.getElementById("source_detect_status");
 
-      if (!fileInput || !sourceSelect || !statusText || fileInput.dataset.autoDetectBound === "true") return;
+      if (!fileInput || !filePickerButton || !fileNameDisplay || !sourceSelect || !statusText || fileInput.dataset.autoDetectBound === "true") return;
 
       fileInput.dataset.autoDetectBound = "true";
+      filePickerButton.addEventListener("click", function() {
+        fileInput.click();
+      });
 
       fileInput.addEventListener("change", function() {
         var file = fileInput.files && fileInput.files[0];
         if (!file) {
+          fileNameDisplay.textContent = "No file selected";
           sourceSelect.value = "";
           statusText.textContent = "Pick a file to auto-detect source type.";
           return;
         }
 
+        fileNameDisplay.textContent = file.name;
         var detectedSource = detectSourceType(file.name);
         if (detectedSource) {
           sourceSelect.value = detectedSource;
