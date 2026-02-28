@@ -3,18 +3,21 @@
     <p class="eyebrow">Convert Files</p>
     <h1>Convert and download your file</h1>
     <p class="lead">
-      Upload a file, choose its source type, pick the target format, and download the converted result.
+      Upload a file, and the source type will be auto-detected from its extension. Then choose the target format and download the converted result.
     </p>
 
     <%= form_with url: convert_files_path, method: :post, multipart: true, local: true, class: "convert-form" do %>
       <div class="form-row">
         <%= label_tag :file, "Choose File" %>
-        <%= file_field_tag :file, required: true %>
+        <%= file_field_tag :file, required: true, id: "file_input" %>
       </div>
 
       <div class="form-row">
         <%= label_tag :source_format, "Source Type" %>
-        <%= select_tag :source_format, options_for_select(ConvertFilesController::SOURCE_OPTIONS, params[:source_format]), required: true %>
+        <%= select_tag :source_format,
+                       options_for_select([["Auto detect from file", ""]] + ConvertFilesController::SOURCE_OPTIONS, params[:source_format]),
+                       id: "source_format_select" %>
+        <p id="source_detect_status" class="auto-detect-note">Pick a file to auto-detect source type.</p>
       </div>
 
       <div class="form-row">
@@ -32,3 +35,55 @@
 
   <p class="back-link"><%= link_to "Back to Home", root_path %></p>
 </main>
+
+<script>
+  (function() {
+    var EXTENSION_TO_SOURCE = {
+      doc: "word",
+      docx: "word",
+      odt: "word",
+      rtf: "word",
+      pdf: "pdf",
+      jpg: "jpg",
+      jpeg: "jpg",
+      png: "png"
+    };
+
+    function detectSourceType(fileName) {
+      if (!fileName || fileName.indexOf(".") === -1) return "";
+      var extension = fileName.split(".").pop().toLowerCase();
+      return EXTENSION_TO_SOURCE[extension] || "";
+    }
+
+    function bindAutoDetect() {
+      var fileInput = document.getElementById("file_input");
+      var sourceSelect = document.getElementById("source_format_select");
+      var statusText = document.getElementById("source_detect_status");
+
+      if (!fileInput || !sourceSelect || !statusText || fileInput.dataset.autoDetectBound === "true") return;
+
+      fileInput.dataset.autoDetectBound = "true";
+
+      fileInput.addEventListener("change", function() {
+        var file = fileInput.files && fileInput.files[0];
+        if (!file) {
+          sourceSelect.value = "";
+          statusText.textContent = "Pick a file to auto-detect source type.";
+          return;
+        }
+
+        var detectedSource = detectSourceType(file.name);
+        if (detectedSource) {
+          sourceSelect.value = detectedSource;
+          statusText.textContent = "Source type auto-detected: " + detectedSource.toUpperCase();
+        } else {
+          sourceSelect.value = "";
+          statusText.textContent = "Could not auto-detect this file type. Select a supported source type.";
+        }
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", bindAutoDetect);
+    document.addEventListener("turbolinks:load", bindAutoDetect);
+  })();
+</script>

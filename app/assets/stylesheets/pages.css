@@ -105,6 +105,12 @@ input[type="file"] {
   color: #5a6884;
 }
 
+.auto-detect-note {
+  margin: 4px 0 0;
+  color: #465575;
+  font-size: 14px;
+}
+
 .back-link {
   margin-top: 16px;
 }

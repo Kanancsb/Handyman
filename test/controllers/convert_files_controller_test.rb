@@ -10,6 +10,7 @@ class ConvertFilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes @response.body, "Convert and download your file"
+    assert_includes @response.body, "Auto detect from file"
     assert_includes @response.body, "Convert and Download"
   end
 
@@ -39,6 +40,31 @@ class ConvertFilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "binary-output", @response.body
     assert_equal "application/pdf", @response.media_type
     assert_match(/attachment; filename=\"converted.pdf\"/, @response.headers["Content-Disposition"])
+  end
+
+  test "downloads converted file when source format is omitted" do
+    uploaded_file = Rack::Test::UploadedFile.new(@sample_file_path, "image/jpeg")
+    result = FileConverter::Result.new(
+      content: "binary-output",
+      filename: "converted.pdf",
+      mime_type: "application/pdf"
+    )
+
+    fake_converter = Struct.new(:result) do
+      def call
+        result
+      end
+    end.new(result)
+
+    FileConverter.stub(:new, fake_converter) do
+      post convert_files_url, params: {
+        file: uploaded_file,
+        target_format: "pdf"
+      }
+    end
+
+    assert_response :success
+    assert_equal "binary-output", @response.body
   end
 
   test "redirects back with alert when validation fails" do

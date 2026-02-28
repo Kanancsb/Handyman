@@ -12,6 +12,7 @@ class FileConverter
   SOURCE_FORMATS = %w[word pdf jpg png].freeze
   TARGET_FORMATS = %w[pdf png jpg ico].freeze
   WORD_EXTENSIONS = %w[doc docx odt rtf].freeze
+  JPG_EXTENSIONS = %w[jpg jpeg].freeze
   MIME_TYPES = {
     "pdf" => "application/pdf",
     "png" => "image/png",
@@ -21,7 +22,7 @@ class FileConverter
 
   def initialize(uploaded_file:, source_format:, target_format:)
     @uploaded_file = uploaded_file
-    @source_format = source_format.to_s.downcase
+    @source_format = normalize_source_format(source_format)
     @target_format = target_format.to_s.downcase
   end
 
@@ -47,9 +48,15 @@ class FileConverter
 
   def validate_request!
     raise ValidationError, "Please upload a file." unless uploaded_file&.respond_to?(:tempfile)
+    raise ValidationError, "Uploaded file has no extension." if input_extension.empty?
+
+    if source_format.blank?
+      raise ValidationError,
+            "Could not auto-detect source type. Supported files: .doc, .docx, .odt, .rtf, .pdf, .jpg, .jpeg, .png."
+    end
+
     raise ValidationError, "Select a source format." unless SOURCE_FORMATS.include?(source_format)
     raise ValidationError, "Select a target format." unless TARGET_FORMATS.include?(target_format)
-    raise ValidationError, "Uploaded file has no extension." if input_extension.empty?
 
     unless extension_matches_source?
       raise ValidationError,
@@ -229,12 +236,28 @@ class FileConverter
     when "pdf"
       input_extension == "pdf"
     when "jpg"
-      %w[jpg jpeg].include?(input_extension)
+      JPG_EXTENSIONS.include?(input_extension)
     when "png"
       input_extension == "png"
     else
       false
     end
+  end
+
+  def normalize_source_format(value)
+    selected_value = value.to_s.downcase
+    return selected_value if selected_value.present?
+
+    detect_source_format_from_extension
+  end
+
+  def detect_source_format_from_extension
+    return "word" if WORD_EXTENSIONS.include?(input_extension)
+    return "pdf" if input_extension == "pdf"
+    return "jpg" if JPG_EXTENSIONS.include?(input_extension)
+    return "png" if input_extension == "png"
+
+    ""
   end
 
   def output_basename
