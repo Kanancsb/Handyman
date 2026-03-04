@@ -10,6 +10,17 @@
   </head>
 
   <body>
+    <header class="site-nav">
+      <div class="site-nav-inner">
+        <%= link_to "Handyman Tools", root_path, class: "site-brand" %>
+        <nav class="site-links" aria-label="Primary navigation">
+          <%= link_to "Home", root_path, class: nav_link_class(root_path) %>
+          <%= link_to "Convert Files", convert_files_path, class: nav_link_class(convert_files_path) %>
+          <%= link_to "Convert Icons", convert_icons_path, class: nav_link_class(convert_icons_path) %>
+        </nav>
+      </div>
+    </header>
+
     <% if flash[:notice].present? || flash[:alert].present? %>
       <div class="flash-wrap">
         <% if flash[:notice].present? %>

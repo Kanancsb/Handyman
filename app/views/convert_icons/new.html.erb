@@ -1,0 +1,62 @@
+<main class="page page-convert-icons">
+  <section class="panel">
+    <p class="eyebrow">Convert Icons</p>
+    <h1>Create profile-ready icons</h1>
+    <p class="lead">
+      Upload a JPG or PNG image and convert it to ICO, Instagram profile size, or Twitter/X profile size.
+    </p>
+
+    <%= form_with url: convert_icons_path, method: :post, multipart: true, local: true, class: "convert-form" do %>
+      <div class="form-row">
+        <div class="file-picker-wrap">
+          <button type="button" id="icon_file_picker_button" class="button button-secondary">Upload Image</button>
+          <span id="icon_file_name_display" class="file-name">No image selected</span>
+        </div>
+        <%= file_field_tag :file,
+                           required: true,
+                           id: "icon_file_input",
+                           class: "hidden-file-input",
+                           accept: ".jpg,.jpeg,.png,image/jpeg,image/png" %>
+      </div>
+
+      <div class="form-row">
+        <%= label_tag :target_preset, "Convert To" %>
+        <%= select_tag :target_preset,
+                       options_for_select(ConvertIconsController::TARGET_OPTIONS, params[:target_preset]),
+                       required: true %>
+      </div>
+
+      <%= submit_tag "Convert Icon and Download", class: "button button-primary" %>
+    <% end %>
+
+    <p class="helper-note">
+      Presets: Instagram profile = 320x320 square. Twitter/X profile = 400x400 square.
+    </p>
+  </section>
+</main>
+
+<script>
+  (function() {
+    function bindIconFilePicker() {
+      var fileInput = document.getElementById("icon_file_input");
+      var filePickerButton = document.getElementById("icon_file_picker_button");
+      var fileNameDisplay = document.getElementById("icon_file_name_display");
+
+      if (!fileInput || !filePickerButton || !fileNameDisplay || fileInput.dataset.bound === "true") return;
+
+      fileInput.dataset.bound = "true";
+
+      filePickerButton.addEventListener("click", function() {
+        fileInput.click();
+      });
+
+      fileInput.addEventListener("change", function() {
+        var file = fileInput.files && fileInput.files[0];
+        fileNameDisplay.textContent = file ? file.name : "No image selected";
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", bindIconFilePicker);
+    document.addEventListener("turbolinks:load", bindIconFilePicker);
+  })();
+</script>

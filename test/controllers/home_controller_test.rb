@@ -7,5 +7,8 @@ class HomeControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes @response.body, "Welcome to your daily file toolbox"
     assert_includes @response.body, "Open File Converter"
+    assert_includes @response.body, "Open Icon Converter"
+    assert_includes @response.body, "Go to Convert Files"
+    assert_includes @response.body, "Go to Convert Icons"
   end
 end

@@ -4,10 +4,13 @@
     <h1>Welcome to your daily file toolbox</h1>
     <p class="lead">
       This website gives you quick, practical tools for everyday file tasks.
-      You can convert Word documents to PDF, turn PDF pages into images,
-      and convert JPG/PNG files into icon-ready formats like ICO for social apps.
+      Use the Convert Files page for document and image format changes, and use
+      Convert Icons for social profile-ready exports for Instagram and Twitter/X.
     </p>
-    <%= link_to "Open File Converter", convert_files_path, class: "button button-primary" %>
+    <div class="hero-actions">
+      <%= link_to "Open File Converter", convert_files_path, class: "button button-primary" %>
+      <%= link_to "Open Icon Converter", convert_icons_path, class: "button button-secondary" %>
+    </div>
   </section>
 
   <section class="features">
@@ -16,6 +19,13 @@
       <li>Word (.doc/.docx/.odt/.rtf) to PDF, PNG, or JPG</li>
       <li>PDF to PNG or JPG (first page)</li>
       <li>JPG/PNG to PDF, JPG, PNG, or ICO</li>
+      <li>JPG/PNG to Instagram profile size (320x320)</li>
+      <li>JPG/PNG to Twitter/X profile size (400x400)</li>
     </ul>
+
+    <div class="tool-links">
+      <%= link_to "Go to Convert Files", convert_files_path, class: "tool-link" %>
+      <%= link_to "Go to Convert Icons", convert_icons_path, class: "tool-link" %>
+    </div>
   </section>
 </main>

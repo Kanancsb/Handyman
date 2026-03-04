@@ -28,7 +28,7 @@ class ConvertFilesControllerTest < ActionDispatch::IntegrationTest
       end
     end.new(result)
 
-    FileConverter.stub(:new, fake_converter) do
+    FileConverter.stub(:new, ->(**_kwargs) { fake_converter }) do
       post convert_files_url, params: {
         file: uploaded_file,
         source_format: "jpg",
@@ -56,7 +56,7 @@ class ConvertFilesControllerTest < ActionDispatch::IntegrationTest
       end
     end.new(result)
 
-    FileConverter.stub(:new, fake_converter) do
+    FileConverter.stub(:new, ->(**_kwargs) { fake_converter }) do
       post convert_files_url, params: {
         file: uploaded_file,
         target_format: "pdf"
