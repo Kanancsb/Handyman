@@ -1,18 +1,18 @@
 <main class="page page-youtube-converter">
   <section class="panel">
     <p class="eyebrow">Youtube_Converter</p>
-    <h1>Download a YouTube video or audio file</h1>
+    <h1>Download a YouTube video, playlist, or audio file</h1>
     <p class="lead">
-      Paste a YouTube link, choose whether to download the full video, MP3, or WAV, and the file will be downloaded directly.
+      Paste a YouTube video or album-style playlist link, choose whether to download the video, MP3, or WAV version, and track progress live while the server prepares the file.
     </p>
 
-    <%= form_with url: youtube_converter_path, method: :post, local: true, class: "convert-form" do %>
+    <%= form_with url: youtube_converter_path, method: :post, local: true, class: "convert-form", id: "youtube_converter_form" do %>
       <div class="form-row">
         <%= label_tag :video_url, "YouTube Link" %>
         <%= url_field_tag :video_url,
                           params[:video_url],
                           required: true,
-                          placeholder: "https://www.youtube.com/watch?v=...",
+                          placeholder: "https://www.youtube.com/watch?v=... or playlist link",
                           class: "text-input" %>
       </div>
 
@@ -23,11 +23,148 @@
                        required: true %>
       </div>
 
-      <%= submit_tag "Download Now", class: "button button-primary" %>
+      <%= submit_tag "Start Download", class: "button button-primary", id: "youtube_submit_button" %>
     <% end %>
 
+    <section id="youtube_progress_panel" class="progress-panel" hidden>
+      <div class="progress-header">
+        <strong id="youtube_progress_title">Preparing download...</strong>
+        <span id="youtube_progress_eta" class="progress-eta">Calculating time remaining...</span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div id="youtube_progress_bar" class="progress-bar"></div>
+      </div>
+      <p id="youtube_progress_percent" class="progress-percent">0%</p>
+      <p id="youtube_progress_items" class="helper-note"></p>
+      <p id="youtube_progress_message" class="helper-note"></p>
+      <a id="youtube_download_link" class="button button-secondary" href="#" hidden>Download File</a>
+    </section>
+
     <p class="helper-note">
-      Server requirements: `yt-dlp` for all downloads, plus `ffmpeg` for MP3 and WAV conversion. Keep `yt-dlp` updated, because old distro packages stop working with YouTube.
+      Playlist and album-style links are packaged into a ZIP when multiple files are downloaded. Server requirements: `yt-dlp`, `ffmpeg`, and `zip`.
     </p>
   </section>
 </main>
+
+<script>
+  (function() {
+    function jsonHeaders() {
+      var tokenTag = document.querySelector('meta[name="csrf-token"]');
+      return {
+        "Accept": "application/json",
+        "X-CSRF-Token": tokenTag ? tokenTag.content : ""
+      };
+    }
+
+    function updateProgressView(status) {
+      var panel = document.getElementById("youtube_progress_panel");
+      var bar = document.getElementById("youtube_progress_bar");
+      var title = document.getElementById("youtube_progress_title");
+      var eta = document.getElementById("youtube_progress_eta");
+      var percent = document.getElementById("youtube_progress_percent");
+      var items = document.getElementById("youtube_progress_items");
+      var message = document.getElementById("youtube_progress_message");
+      var downloadLink = document.getElementById("youtube_download_link");
+
+      panel.hidden = false;
+      bar.style.width = (status.progress || 0) + "%";
+      percent.textContent = (status.progress || 0) + "%";
+      if (status.state === "completed") {
+        title.textContent = "Download ready";
+      } else if (status.state === "failed") {
+        title.textContent = "Download failed";
+      } else {
+        title.textContent = "Download in progress";
+      }
+
+      eta.textContent = status.state === "failed" ? "Time remaining: unavailable" : (status.eta ? "Time remaining: " + status.eta : "Time remaining: calculating...");
+      message.textContent = status.message || "";
+
+      if (status.current_item && status.total_items) {
+        items.textContent = "Item " + status.current_item + " of " + status.total_items;
+      } else {
+        items.textContent = "";
+      }
+
+      if (status.download_ready && status.download_url) {
+        downloadLink.hidden = false;
+        downloadLink.href = status.download_url;
+      } else {
+        downloadLink.hidden = true;
+      }
+    }
+
+    function pollStatus(statusUrl) {
+      var downloadTriggered = false;
+
+      function tick() {
+        fetch(statusUrl, { headers: jsonHeaders() })
+          .then(function(response) { return response.json(); })
+          .then(function(status) {
+            updateProgressView(status);
+
+            if (status.state === "completed" && status.download_url) {
+              if (!downloadTriggered) {
+                downloadTriggered = true;
+                window.location = status.download_url;
+              }
+              return;
+            }
+
+            if (status.state === "failed" || status.state === "missing") {
+              return;
+            }
+
+            window.setTimeout(tick, 1200);
+          })
+          .catch(function() {
+            window.setTimeout(tick, 2000);
+          });
+      }
+
+      tick();
+    }
+
+    function bindYoutubeConverterForm() {
+      var form = document.getElementById("youtube_converter_form");
+      var submitButton = document.getElementById("youtube_submit_button");
+      var progressPanel = document.getElementById("youtube_progress_panel");
+      var message = document.getElementById("youtube_progress_message");
+
+      if (!form || form.dataset.bound === "true") return;
+      form.dataset.bound = "true";
+
+      form.addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        submitButton.disabled = true;
+        progressPanel.hidden = false;
+        message.textContent = "Creating download job...";
+
+        fetch(form.action, {
+          method: "POST",
+          headers: jsonHeaders(),
+          body: new FormData(form)
+        })
+          .then(function(response) {
+            return response.json().then(function(data) {
+              if (!response.ok) throw data;
+              return data;
+            });
+          })
+          .then(function(data) {
+            pollStatus(data.status_url);
+          })
+          .catch(function(error) {
+            message.textContent = error && error.error ? error.error : "Failed to start YouTube download.";
+          })
+          .finally(function() {
+            submitButton.disabled = false;
+          });
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", bindYoutubeConverterForm);
+    document.addEventListener("turbolinks:load", bindYoutubeConverterForm);
+  })();
+</script>

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= favicon_link_tag "Icons/handymanIco.png" %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   </head>
@@ -12,7 +13,10 @@
   <body>
     <header class="site-nav">
       <div class="site-nav-inner">
-        <%= link_to "Handyman Tools", root_path, class: "site-brand" %>
+        <%= link_to root_path, class: "site-brand" do %>
+          <%= image_tag "Icons/handymanIco.png", alt: "Handyman Tools logo", class: "site-brand-logo" %>
+          <span>Handyman Tools</span>
+        <% end %>
         <nav class="site-links" aria-label="Primary navigation">
           <%= link_to "Home", root_path, class: nav_link_class(root_path) %>
           <%= link_to "Convert Files", convert_files_path, class: nav_link_class(convert_files_path) %>
