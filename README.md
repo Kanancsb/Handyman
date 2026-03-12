@@ -4,11 +4,7 @@ HandymanApp is a Ruby on Rails project with a small collection of daily conversi
 
 ## What the project can do
 
-### 1. Home page
-- Shows the main website introduction.
-- Links users to the available tools.
-
-### 2. Convert Files
+### 1. Convert Files
 - Upload and convert files between supported formats.
 - Auto-detects the source type from the uploaded file.
 - Current supported flows:
@@ -16,7 +12,7 @@ HandymanApp is a Ruby on Rails project with a small collection of daily conversi
   - `PDF` to `PNG` or `JPG`
   - `JPG` and `PNG` to `PDF`, `PNG`, `JPG`, or `ICO`
 
-### 3. Convert Icons
+### 2. Convert Icons
 - Upload a `JPG` or `PNG` and generate:
   - `.ico`
   - Instagram profile image in `PNG`
@@ -24,7 +20,7 @@ HandymanApp is a Ruby on Rails project with a small collection of daily conversi
   - Twitter/X profile image in `PNG`
   - Twitter/X profile image in `JPG`
 
-### 4. Youtube_Converter
+### 3. Youtube_Converter
 - Download a YouTube video from a link.
 - Convert a YouTube video to `MP3`.
 - Convert a YouTube video to `WAV`.
@@ -34,7 +30,6 @@ HandymanApp is a Ruby on Rails project with a small collection of daily conversi
 
 ## Main routes
 
-- `/` - Home page
 - `/convert-files` - File conversion page
 - `/convert-icons` - Icon and social image conversion page
 - `/youtube-converter` - YouTube video/audio download page
@@ -161,11 +156,3 @@ bin/rails routes
 - Playlist and album links can generate multiple files; those are returned as a `.zip`.
 - Audio downloads require both `yt-dlp` and `ffmpeg`.
 - Progress and ETA depend on the output reported by `yt-dlp`.
-
-## Branding asset
-
-The site uses the project icon from:
-
-- `app/assets/images/Icons/handymanIco.png`
-
-It is used in the header and as the page favicon.
