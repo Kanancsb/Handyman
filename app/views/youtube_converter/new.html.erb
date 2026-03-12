@@ -1,0 +1,33 @@
+<main class="page page-youtube-converter">
+  <section class="panel">
+    <p class="eyebrow">Youtube_Converter</p>
+    <h1>Download a YouTube video or audio file</h1>
+    <p class="lead">
+      Paste a YouTube link, choose whether to download the full video, MP3, or WAV, and the file will be downloaded directly.
+    </p>
+
+    <%= form_with url: youtube_converter_path, method: :post, local: true, class: "convert-form" do %>
+      <div class="form-row">
+        <%= label_tag :video_url, "YouTube Link" %>
+        <%= url_field_tag :video_url,
+                          params[:video_url],
+                          required: true,
+                          placeholder: "https://www.youtube.com/watch?v=...",
+                          class: "text-input" %>
+      </div>
+
+      <div class="form-row">
+        <%= label_tag :download_type, "Choose Action" %>
+        <%= select_tag :download_type,
+                       options_for_select(YoutubeConverterController::DOWNLOAD_OPTIONS, params[:download_type]),
+                       required: true %>
+      </div>
+
+      <%= submit_tag "Download Now", class: "button button-primary" %>
+    <% end %>
+
+    <p class="helper-note">
+      Server requirements: `yt-dlp` for all downloads, plus `ffmpeg` for MP3 and WAV conversion. Keep `yt-dlp` updated, because old distro packages stop working with YouTube.
+    </p>
+  </section>
+</main>

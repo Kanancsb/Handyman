@@ -6,10 +6,12 @@
       This website gives you quick, practical tools for everyday file tasks.
       Use the Convert Files page for document and image format changes, and use
       Convert Icons for social profile-ready exports for Instagram and Twitter/X.
+      You can also use Youtube_Converter to download videos or extract MP3 and WAV audio.
     </p>
     <div class="hero-actions">
       <%= link_to "Open File Converter", convert_files_path, class: "button button-primary" %>
       <%= link_to "Open Icon Converter", convert_icons_path, class: "button button-secondary" %>
+      <%= link_to "Open Youtube Converter", youtube_converter_path, class: "button button-secondary" %>
     </div>
   </section>
 
@@ -21,11 +23,13 @@
       <li>JPG/PNG to PDF, JPG, PNG, or ICO</li>
       <li>JPG/PNG to Instagram profile size (320x320)</li>
       <li>JPG/PNG to Twitter/X profile size (400x400)</li>
+      <li>YouTube video download, plus YouTube to MP3 and WAV</li>
     </ul>
 
     <div class="tool-links">
       <%= link_to "Go to Convert Files", convert_files_path, class: "tool-link" %>
       <%= link_to "Go to Convert Icons", convert_icons_path, class: "tool-link" %>
+      <%= link_to "Go to Youtube Converter", youtube_converter_path, class: "tool-link" %>
     </div>
   </section>
 </main>
