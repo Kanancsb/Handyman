@@ -33,18 +33,16 @@ input {
 }
 
 .download-shell {
-	width: min(1120px, calc(100% - 32px));
+	width: min(880px, calc(100% - 32px));
 	min-height: 100vh;
 	margin: 0 auto;
 	display: grid;
-	grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-	gap: 24px;
-	align-items: center;
+	place-items: center;
 	padding: 40px 0;
 }
 
-.download-panel,
-.signal-panel {
+.download-panel {
+	width: 100%;
 	border: 1px solid var(--line);
 	border-radius: 8px;
 	background: rgba(255, 255, 255, 0.92);
@@ -208,80 +206,93 @@ button:disabled {
 	color: #a32626;
 }
 
-.signal-panel {
-	min-height: 360px;
-	padding: 18px;
+.download-queue {
 	display: grid;
-	grid-template-rows: auto 1fr auto;
-	gap: 18px;
-}
-
-.signal-header {
-	display: flex;
-	gap: 8px;
-}
-
-.signal-header span {
-	width: 12px;
-	height: 12px;
-	border-radius: 999px;
-	background: var(--green);
-}
-
-.signal-header span:nth-child(2) {
-	background: var(--cyan);
-}
-
-.signal-header span:nth-child(3) {
-	background: #ffd166;
-}
-
-.signal-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 10px;
 }
 
-.signal-grid div {
-	min-height: 72px;
+.download-timer {
+	display: grid;
+	grid-template-columns: 68px minmax(0, 1fr) 76px;
+	gap: 12px;
+	align-items: center;
+	min-height: 42px;
+	padding: 10px;
 	border: 1px solid var(--line);
 	border-radius: 8px;
-	background:
-		linear-gradient(90deg, rgba(19, 122, 61, 0.12), transparent),
-		var(--surface-soft);
+	background: var(--surface);
 }
 
-.signal-grid div:nth-child(2n) {
-	background:
-		linear-gradient(90deg, rgba(31, 159, 178, 0.14), transparent),
-		var(--surface);
-}
-
-.signal-panel p {
-	margin: 0;
-	padding: 14px;
-	border: 1px solid var(--line);
-	border-radius: 8px;
-	color: var(--green-dark);
-	background: var(--surface-soft);
+.timer-label,
+.timer-value {
+	font-size: 0.86rem;
 	font-weight: 800;
+	color: var(--green-dark);
+}
+
+.timer-track {
+	position: relative;
+	height: 10px;
+	border-radius: 999px;
+	background: #dcefe3;
+	overflow: hidden;
+}
+
+.timer-fill {
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 0;
+	border-radius: inherit;
+	background: linear-gradient(90deg, var(--green-dark), var(--green), var(--cyan));
+}
+
+.download-timer.is-running .timer-fill {
+	width: 58%;
+	animation: wait-pulse 1.4s ease-in-out infinite;
+}
+
+.download-timer.is-complete .timer-fill {
+	width: 100%;
+}
+
+.download-timer.is-error {
+	border-color: rgba(163, 38, 38, 0.4);
+	background: #fff7f7;
+}
+
+.download-timer.is-error .timer-fill {
+	width: 100%;
+	background: #c94a4a;
+}
+
+.download-timer.is-error .timer-label,
+.download-timer.is-error .timer-value {
+	color: #a32626;
+}
+
+@keyframes wait-pulse {
+	0% {
+		transform: translateX(-80%);
+	}
+
+	55% {
+		transform: translateX(75%);
+	}
+
+	100% {
+		transform: translateX(175%);
+	}
 }
 
 @media (max-width: 860px) {
 	.download-shell {
-		grid-template-columns: 1fr;
-		align-items: start;
 		padding: 24px 0;
-	}
-
-	.signal-panel {
-		min-height: 220px;
 	}
 }
 
 @media (max-width: 620px) {
 	.download-shell {
-		width: min(100% - 20px, 1120px);
+		width: min(100% - 20px, 880px);
 	}
 
 	.url-row,
@@ -291,5 +302,10 @@ button:disabled {
 
 	button {
 		width: 100%;
+	}
+
+	.download-timer {
+		grid-template-columns: 56px minmax(0, 1fr) 70px;
+		gap: 8px;
 	}
 }

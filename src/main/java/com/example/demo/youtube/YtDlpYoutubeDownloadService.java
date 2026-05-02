@@ -2,6 +2,9 @@ package com.example.demo.youtube;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -69,6 +72,10 @@ public class YtDlpYoutubeDownloadService implements YoutubeDownloadService {
 			command.add("--js-runtimes");
 			command.add(properties.getJsRuntime());
 		}
+		if (isPlaylistUrl(youtubeUrl)) {
+			command.add("--yes-playlist");
+			command.add("--ignore-errors");
+		}
 
 		switch (format) {
 			case MP3 -> {
@@ -93,6 +100,28 @@ public class YtDlpYoutubeDownloadService implements YoutubeDownloadService {
 
 		command.add(youtubeUrl);
 		return List.copyOf(command);
+	}
+
+	private boolean isPlaylistUrl(String youtubeUrl) {
+		try {
+			String query = URI.create(youtubeUrl).getRawQuery();
+			if (!StringUtils.hasText(query)) {
+				return false;
+			}
+
+			for (String parameter : query.split("&")) {
+				String[] parts = parameter.split("=", 2);
+				String key = URLDecoder.decode(parts[0], StandardCharsets.UTF_8);
+				String value = parts.length > 1 ? URLDecoder.decode(parts[1], StandardCharsets.UTF_8) : "";
+				if ("list".equals(key) && StringUtils.hasText(value)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (IllegalArgumentException ex) {
+			return false;
+		}
 	}
 
 	private void writeZip(Path mediaDirectory, Path archive) throws IOException {

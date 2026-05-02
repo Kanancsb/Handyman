@@ -1,6 +1,7 @@
 package com.example.demo.youtube;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,18 +16,22 @@ class YoutubeStaticAssetsTest {
 		String html = Files.readString(Path.of("src/main/resources/static/youtube.html"));
 
 		assertTrue(html.contains("id=\"youtube-url\""));
+		assertTrue(html.contains("id=\"download-queue\""));
 		assertTrue(html.contains("value=\"mp3\""));
 		assertTrue(html.contains("value=\"wav\""));
 		assertTrue(html.contains("value=\"video\""));
+		assertFalse(html.contains("signal-panel"));
 	}
 
 	@Test
-	void scriptsStartOneRequestPerSelectedFormat() throws IOException {
+	void scriptsTrackDownloadsWithTimerRows() throws IOException {
 		String script = Files.readString(Path.of("src/main/resources/static/js/youtube.js"));
 
-		assertTrue(script.contains("formats.forEach"));
+		assertTrue(script.contains("formats.map"));
+		assertTrue(script.contains("fetch("));
 		assertTrue(script.contains("/api/youtube/download"));
-		assertTrue(script.contains("iframe"));
+		assertTrue(script.contains("createDownloadTimer"));
+		assertTrue(script.contains("formatDownloadTime"));
 	}
 
 	@Test
@@ -35,5 +40,8 @@ class YoutubeStaticAssetsTest {
 
 		assertTrue(styles.contains("@media (max-width: 860px)"));
 		assertTrue(styles.contains("@media (max-width: 620px)"));
+		assertTrue(styles.contains(".download-timer"));
+		assertTrue(styles.contains("@keyframes wait-pulse"));
+		assertFalse(styles.contains(".signal-panel"));
 	}
 }

@@ -1,6 +1,7 @@
 package com.example.demo.youtube;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,6 +30,7 @@ class YtDlpYoutubeDownloadServiceTest {
 		assertTrue(command.contains("mp3"));
 		assertTrue(command.contains("--js-runtimes"));
 		assertTrue(command.contains("node"));
+		assertFalse(command.contains("--yes-playlist"));
 		assertEquals("https://www.youtube.com/watch?v=abc123", command.get(command.size() - 1));
 	}
 
@@ -42,6 +44,18 @@ class YtDlpYoutubeDownloadServiceTest {
 		assertTrue(command.contains("bestvideo+bestaudio/best"));
 		assertTrue(command.contains("--merge-output-format"));
 		assertTrue(command.contains("mp4"));
+	}
+
+	@Test
+	void commandForPlaylistForcesPlaylistMode() {
+		YtDlpYoutubeDownloadService service = newService(new CapturingExecutor("video.mp4"));
+
+		List<String> command = service.commandFor(
+				"https://www.youtube.com/watch?v=abc123&list=PL123",
+				ArchiveFormat.VIDEO);
+
+		assertTrue(command.contains("--yes-playlist"));
+		assertTrue(command.contains("--ignore-errors"));
 	}
 
 	@Test

@@ -13,7 +13,7 @@ public class YoutubeDownloaderProperties {
 
 	private String jsRuntime = "node";
 
-	private Duration timeout = Duration.ofMinutes(30);
+	private Duration timeout = Duration.ofHours(2);
 
 	public String getBinary() {
 		return binary;
