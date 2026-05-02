@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>YouTube Download</title>
+	<link rel="stylesheet" href="/css/youtube.css">
+</head>
+<body>
+	<main class="download-shell">
+		<section class="download-panel" aria-labelledby="page-title">
+			<div class="panel-copy">
+				<p class="eyebrow">Handyman Tools</p>
+				<h1 id="page-title">YouTube Archive Download</h1>
+				<p class="permission-note">Only download content you own or have permission to use.</p>
+			</div>
+
+			<form class="download-form" id="download-form">
+				<label class="field-label" for="youtube-url">YouTube link</label>
+				<div class="url-row">
+					<input id="youtube-url" name="url" type="url" inputmode="url"
+						placeholder="https://www.youtube.com/watch?v=..."
+						autocomplete="off" required>
+					<button type="submit">Start</button>
+				</div>
+
+				<fieldset class="format-grid" aria-describedby="format-error">
+					<legend>Archive type</legend>
+					<label class="format-option">
+						<input type="checkbox" name="format" value="mp3">
+						<span>
+							<strong>MP3</strong>
+							<small>audio zip</small>
+						</span>
+					</label>
+					<label class="format-option">
+						<input type="checkbox" name="format" value="wav">
+						<span>
+							<strong>WAV</strong>
+							<small>audio zip</small>
+						</span>
+					</label>
+					<label class="format-option">
+						<input type="checkbox" name="format" value="video">
+						<span>
+							<strong>Video</strong>
+							<small>mp4 zip</small>
+						</span>
+					</label>
+				</fieldset>
+
+				<p class="form-message" id="format-error" role="status" aria-live="polite"></p>
+			</form>
+		</section>
+
+		<section class="signal-panel" aria-label="Download status">
+			<div class="signal-header">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<div class="signal-grid">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
+			<p id="download-status">Ready</p>
+		</section>
+	</main>
+	<script src="/js/youtube.js" defer></script>
+</body>
+</html>
