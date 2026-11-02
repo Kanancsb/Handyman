@@ -28,8 +28,13 @@ body {
 }
 
 button,
-input {
+input,
+select {
 	font: inherit;
+}
+
+[hidden] {
+	display: none !important;
 }
 
 .download-shell {
@@ -114,6 +119,10 @@ input[type="url"] {
 	outline: none;
 }
 
+.source-panel > input[type="url"] {
+	margin-top: 8px;
+}
+
 input[type="url"]:focus {
 	border-color: var(--green);
 	box-shadow: 0 0 0 4px rgba(40, 180, 99, 0.14);
@@ -133,6 +142,176 @@ button {
 button:disabled {
 	cursor: wait;
 	opacity: 0.72;
+}
+
+.source-label {
+	margin: 0 0 8px;
+}
+
+.source-switch {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px;
+	padding: 5px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-soft);
+}
+
+.source-switch .source-option {
+	min-width: 0;
+	min-height: 44px;
+	color: var(--green-dark);
+	background: transparent;
+}
+
+.source-switch .source-option[aria-pressed="true"] {
+	color: #ffffff;
+	background: linear-gradient(135deg, var(--green-dark), var(--green));
+	box-shadow: 0 8px 20px rgba(19, 122, 61, 0.18);
+}
+
+.source-panel {
+	display: grid;
+	gap: 8px;
+}
+
+.spotify-source {
+	gap: 18px;
+	padding: 18px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: var(--surface-soft);
+}
+
+.spotify-connection {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+.source-help {
+	margin: 5px 0 0;
+	color: var(--muted);
+	font-size: 0.88rem;
+	line-height: 1.5;
+}
+
+#spotify-tools {
+	display: grid;
+	gap: 8px;
+}
+
+.button-link,
+.secondary-button {
+	flex: 0 0 auto;
+	min-width: 128px;
+	min-height: 44px;
+	display: inline-grid;
+	place-items: center;
+	border: 1px solid var(--green-dark);
+	border-radius: 8px;
+	padding: 0 16px;
+	color: var(--green-dark);
+	background: #ffffff;
+	font-size: 0.9rem;
+	font-weight: 800;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.spotify-results {
+	display: grid;
+	gap: 12px;
+	padding-top: 16px;
+	border-top: 1px solid var(--line);
+}
+
+.results-heading h2 {
+	margin: 0;
+	font-size: 1.05rem;
+}
+
+.results-heading p {
+	margin: 5px 0 0;
+	color: var(--muted);
+	font-size: 0.88rem;
+}
+
+.spotify-match-list {
+	display: grid;
+	gap: 8px;
+	max-height: 520px;
+	overflow: auto;
+}
+
+.spotify-match {
+	display: grid;
+	grid-template-columns: auto minmax(130px, 0.75fr) minmax(220px, 1.25fr);
+	gap: 10px;
+	align-items: center;
+	padding: 12px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: #ffffff;
+}
+
+.match-toggle {
+	width: 18px;
+	height: 18px;
+	accent-color: var(--green);
+}
+
+.track-copy {
+	min-width: 0;
+}
+
+.track-copy strong,
+.track-copy small {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.track-copy small {
+	margin-top: 3px;
+	color: var(--muted);
+}
+
+.spotify-track-link {
+	display: inline-block;
+	margin-top: 5px;
+	color: var(--green-dark);
+	font-size: 0.76rem;
+	font-weight: 800;
+	text-decoration: none;
+}
+
+.spotify-track-link:hover {
+	text-decoration: underline;
+}
+
+.candidate-select {
+	min-width: 0;
+	width: 100%;
+	height: 42px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	padding: 0 10px;
+	color: var(--text);
+	background: #ffffff;
+}
+
+.no-candidate {
+	color: #a32626;
+	font-size: 0.86rem;
+	font-weight: 700;
+}
+
+.primary-action {
+	justify-self: start;
 }
 
 .format-grid {
@@ -204,6 +383,29 @@ button:disabled {
 
 .form-message.error {
 	color: #a32626;
+}
+
+.download-error-details {
+	border: 1px solid rgba(163, 38, 38, 0.35);
+	border-radius: 8px;
+	padding: 12px 14px;
+	background: #fff7f7;
+}
+
+.download-error-details summary {
+	color: #a32626;
+	font-weight: 800;
+	cursor: pointer;
+}
+
+.download-error-details pre {
+	max-height: 280px;
+	margin: 12px 0 0;
+	overflow: auto;
+	white-space: pre-wrap;
+	word-break: break-word;
+	color: #562020;
+	font: 0.78rem/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
 .download-queue {
@@ -296,7 +498,8 @@ button:disabled {
 	}
 
 	.url-row,
-	.format-grid {
+	.format-grid,
+	.source-switch {
 		grid-template-columns: 1fr;
 	}
 
@@ -307,5 +510,19 @@ button:disabled {
 	.download-timer {
 		grid-template-columns: 56px minmax(0, 1fr) 70px;
 		gap: 8px;
+	}
+
+	.spotify-connection {
+		align-items: stretch;
+		flex-direction: column;
+	}
+
+	.spotify-match {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.spotify-match .candidate-select,
+	.spotify-match .no-candidate {
+		grid-column: 1 / -1;
 	}
 }

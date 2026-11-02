@@ -15,6 +15,8 @@ public class YoutubeDownloaderProperties {
 
 	private Duration timeout = Duration.ofHours(2);
 
+	private Duration preparedDownloadTtl = Duration.ofMinutes(30);
+
 	public String getBinary() {
 		return binary;
 	}
@@ -37,5 +39,13 @@ public class YoutubeDownloaderProperties {
 
 	public void setTimeout(Duration timeout) {
 		this.timeout = timeout;
+	}
+
+	public Duration getPreparedDownloadTtl() {
+		return preparedDownloadTtl;
+	}
+
+	public void setPreparedDownloadTtl(Duration preparedDownloadTtl) {
+		this.preparedDownloadTtl = preparedDownloadTtl;
 	}
 }

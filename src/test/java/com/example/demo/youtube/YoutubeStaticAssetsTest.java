@@ -17,6 +17,9 @@ class YoutubeStaticAssetsTest {
 
 		assertTrue(html.contains("id=\"youtube-url\""));
 		assertTrue(html.contains("id=\"download-queue\""));
+		assertTrue(html.contains("id=\"spotify-source\""));
+		assertTrue(html.contains("id=\"spotify-match-list\""));
+		assertTrue(html.contains("id=\"download-error-details\""));
 		assertTrue(html.contains("value=\"mp3\""));
 		assertTrue(html.contains("value=\"wav\""));
 		assertTrue(html.contains("value=\"video\""));
@@ -29,7 +32,12 @@ class YoutubeStaticAssetsTest {
 
 		assertTrue(script.contains("formats.map"));
 		assertTrue(script.contains("fetch("));
-		assertTrue(script.contains("/api/youtube/download"));
+		assertTrue(script.contains("/api/youtube/prepare"));
+		assertTrue(script.contains("triggerNativeDownload"));
+		assertFalse(script.contains("response.blob()"));
+		assertTrue(script.contains("/api/spotify/import"));
+		assertTrue(script.contains("renderSpotifyMatches"));
+		assertTrue(script.contains("showDownloadFailure"));
 		assertTrue(script.contains("createDownloadTimer"));
 		assertTrue(script.contains("formatDownloadTime"));
 	}
@@ -41,6 +49,7 @@ class YoutubeStaticAssetsTest {
 		assertTrue(styles.contains("@media (max-width: 860px)"));
 		assertTrue(styles.contains("@media (max-width: 620px)"));
 		assertTrue(styles.contains(".download-timer"));
+		assertTrue(styles.contains(".spotify-match"));
 		assertTrue(styles.contains("@keyframes wait-pulse"));
 		assertFalse(styles.contains(".signal-panel"));
 	}

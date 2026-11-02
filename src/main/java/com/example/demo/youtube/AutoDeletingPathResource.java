@@ -29,13 +29,13 @@ public class AutoDeletingPathResource extends FileSystemResource {
 					super.close();
 				}
 				finally {
-					deleteRoot();
+					deleteNow();
 				}
 			}
 		};
 	}
 
-	private void deleteRoot() {
+	void deleteNow() {
 		try (Stream<Path> paths = Files.walk(rootToDelete)) {
 			paths.sorted(Comparator.reverseOrder()).forEach(path -> {
 				try {

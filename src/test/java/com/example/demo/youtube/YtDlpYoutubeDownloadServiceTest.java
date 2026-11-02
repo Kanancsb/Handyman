@@ -2,6 +2,7 @@ package com.example.demo.youtube;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -30,6 +31,8 @@ class YtDlpYoutubeDownloadServiceTest {
 		assertTrue(command.contains("mp3"));
 		assertTrue(command.contains("--js-runtimes"));
 		assertTrue(command.contains("node"));
+		assertEquals("%(autonumber)02d_%(title).180B.%(ext)s",
+				command.get(command.indexOf("--output") + 1));
 		assertFalse(command.contains("--yes-playlist"));
 		assertEquals("https://www.youtube.com/watch?v=abc123", command.get(command.size() - 1));
 	}
@@ -59,6 +62,18 @@ class YtDlpYoutubeDownloadServiceTest {
 	}
 
 	@Test
+	void commandForBatchIncludesEveryConfirmedVideo() {
+		YtDlpYoutubeDownloadService service = newService(new CapturingExecutor("first.mp3", "second.mp3"));
+
+		List<String> command = service.commandFor(List.of(
+				"https://www.youtube.com/watch?v=first",
+				"https://www.youtube.com/watch?v=second"), ArchiveFormat.MP3);
+
+		assertEquals("https://www.youtube.com/watch?v=first", command.get(command.size() - 2));
+		assertEquals("https://www.youtube.com/watch?v=second", command.getLast());
+	}
+
+	@Test
 	void createsZipWithAllDownloadedMediaFiles() throws IOException {
 		CapturingExecutor executor = new CapturingExecutor("first.mp3", "second.mp3", "download.log", "partial.part");
 		YtDlpYoutubeDownloadService service = newService(executor);
@@ -77,6 +92,21 @@ class YtDlpYoutubeDownloadServiceTest {
 
 		assertThrows(DownloadException.class,
 				() -> service.download("https://www.youtube.com/watch?v=abc123", ArchiveFormat.WAV));
+	}
+
+	@Test
+	void attachesDiagnosticIdAndPreservesDownloaderOutputOnFailure() {
+		ProcessExecutor executor = (command, workingDirectory, timeout) -> {
+			throw new DownloadException("yt-dlp failed with exit code 1.", "ERROR: playlist unavailable");
+		};
+		YtDlpYoutubeDownloadService service = newService(executor);
+
+		DownloadException failure = assertThrows(DownloadException.class,
+				() -> service.download("https://www.youtube.com/playlist?list=PL123", ArchiveFormat.MP3));
+
+		assertNotNull(failure.diagnosticId());
+		assertEquals(8, failure.diagnosticId().length());
+		assertEquals("ERROR: playlist unavailable", failure.diagnosticDetails());
 	}
 
 	private YtDlpYoutubeDownloadService newService(ProcessExecutor executor) {

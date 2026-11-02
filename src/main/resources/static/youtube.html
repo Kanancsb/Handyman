@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>YouTube Download</title>
+	<title>YouTube Archive Download</title>
 	<link rel="stylesheet" href="/css/youtube.css">
 </head>
 <body>
@@ -12,17 +12,54 @@
 			<div class="panel-copy">
 				<p class="eyebrow">Handyman Tools</p>
 				<h1 id="page-title">YouTube Archive Download</h1>
-				<p class="permission-note">Only download content you own or have permission to use.</p>
+				<p class="permission-note">Download a YouTube link directly or match a Spotify playlist to YouTube. Only download content you own or have permission to use.</p>
 			</div>
 
 			<form class="download-form" id="download-form">
-				<label class="field-label" for="youtube-url">YouTube link</label>
-				<div class="url-row">
+				<div>
+					<p class="field-label source-label">Source</p>
+					<div class="source-switch" role="group" aria-label="Download source">
+						<button type="button" class="source-option" data-source="youtube" aria-pressed="true">YouTube link</button>
+						<button type="button" class="source-option" data-source="spotify" aria-pressed="false">Spotify playlist</button>
+					</div>
+				</div>
+
+				<section class="source-panel" id="youtube-source" aria-label="YouTube source">
+					<label class="field-label" for="youtube-url">YouTube link</label>
 					<input id="youtube-url" name="url" type="url" inputmode="url"
 						placeholder="https://www.youtube.com/watch?v=..."
-						autocomplete="off" required>
-					<button type="submit">Start</button>
-				</div>
+						autocomplete="off">
+				</section>
+
+				<section class="source-panel spotify-source" id="spotify-source" aria-label="Spotify playlist source" hidden>
+					<div class="spotify-connection">
+						<div>
+							<p class="field-label">Spotify connection</p>
+							<p class="source-help" id="spotify-status">Checking Spotify configuration…</p>
+						</div>
+						<a class="button-link" id="spotify-connect" href="/api/spotify/login" hidden>Connect Spotify</a>
+						<button class="secondary-button" id="spotify-disconnect" type="button" hidden>Disconnect</button>
+					</div>
+
+					<div id="spotify-tools" hidden>
+						<label class="field-label" for="spotify-url">Spotify playlist link</label>
+						<div class="url-row">
+							<input id="spotify-url" type="url" inputmode="url"
+								placeholder="https://open.spotify.com/playlist/..."
+								autocomplete="off">
+							<button id="spotify-import" type="button">Find matches</button>
+						</div>
+						<p class="source-help">Spotify currently permits playlists owned by you or playlists where you are a collaborator.</p>
+					</div>
+
+					<section class="spotify-results" id="spotify-results" aria-labelledby="spotify-results-title" hidden>
+						<div class="results-heading">
+							<h2 id="spotify-results-title">Review YouTube matches</h2>
+							<p id="spotify-summary"></p>
+						</div>
+						<div class="spotify-match-list" id="spotify-match-list"></div>
+					</section>
+				</section>
 
 				<fieldset class="format-grid" aria-describedby="format-error">
 					<legend>Archive type</legend>
@@ -49,7 +86,12 @@
 					</label>
 				</fieldset>
 
+				<button class="primary-action" id="download-button" type="submit">Start download</button>
 				<p class="form-message" id="format-error" role="status" aria-live="polite"></p>
+				<details class="download-error-details" id="download-error-details" hidden>
+					<summary>Technical error details</summary>
+					<pre id="download-error-log"></pre>
+				</details>
 				<div class="download-queue" id="download-queue" aria-live="polite" hidden></div>
 			</form>
 		</section>

@@ -24,4 +24,12 @@ class YoutubeUrlValidatorTest {
 		assertFalse(validator.isSupported("ftp://www.youtube.com/watch?v=abc123"));
 		assertFalse(validator.isSupported("https://example.com/watch?v=abc123"));
 	}
+
+	@Test
+	void identifiesIndividualVideosForValidatedBatches() {
+		assertTrue(validator.isIndividualVideo("https://www.youtube.com/watch?v=abc12345678"));
+		assertTrue(validator.isIndividualVideo("https://youtu.be/abc12345678"));
+		assertFalse(validator.isIndividualVideo("https://www.youtube.com/playlist?list=PL123"));
+		assertFalse(validator.isIndividualVideo("https://www.youtube.com/watch?v=abc12345678&list=PL123"));
+	}
 }

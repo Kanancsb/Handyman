@@ -1,7 +1,6 @@
 package com.example.demo.youtube;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -12,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DefaultProcessExecutor implements ProcessExecutor {
-
-	private static final int ERROR_TAIL_BYTES = 8_192;
 
 	@Override
 	public void execute(List<String> command, Path workingDirectory, Duration timeout) {
@@ -29,17 +26,23 @@ public class DefaultProcessExecutor implements ProcessExecutor {
 			boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
 			if (!completed) {
 				process.destroyForcibly();
-				throw new DownloadException("The download process timed out.");
+				throw new DownloadException(
+						"yt-dlp timed out after %s.".formatted(readableTimeout(timeout)),
+						ProcessLogTail.read(logFile));
 			}
 
 			int exitCode = process.exitValue();
 			if (exitCode != 0) {
-				throw new DownloadException("The download process failed with exit code %d.%s"
-						.formatted(exitCode, processOutput(logFile)));
+				throw new DownloadException(
+						"yt-dlp failed with exit code %d.".formatted(exitCode),
+						ProcessLogTail.read(logFile));
 			}
 		}
 		catch (IOException ex) {
-			throw new DownloadException("Could not start the download process. Make sure yt-dlp is installed.", ex);
+			throw new DownloadException(
+					"Could not start the download process. Make sure yt-dlp is installed.",
+					"Process start error: " + ex.getMessage(),
+					ex);
 		}
 		catch (InterruptedException ex) {
 			Thread.currentThread().interrupt();
@@ -47,17 +50,58 @@ public class DefaultProcessExecutor implements ProcessExecutor {
 		}
 	}
 
-	private String processOutput(Path logFile) {
+	@Override
+	public String executeForOutput(List<String> command, Path workingDirectory, Duration timeout) {
+		Path outputFile = null;
 		try {
-			if (!Files.exists(logFile)) {
-				return "";
+			Files.createDirectories(workingDirectory);
+			outputFile = Files.createTempFile(workingDirectory, "search-", ".log");
+			Process process = new ProcessBuilder(command)
+					.directory(workingDirectory.toFile())
+					.redirectErrorStream(true)
+					.redirectOutput(outputFile.toFile())
+					.start();
+
+			boolean completed = process.waitFor(timeout.toMillis(), TimeUnit.MILLISECONDS);
+			if (!completed) {
+				process.destroyForcibly();
+				throw new DownloadException("The YouTube search timed out.");
 			}
-			byte[] bytes = Files.readAllBytes(logFile);
-			int offset = Math.max(0, bytes.length - ERROR_TAIL_BYTES);
-			return System.lineSeparator() + new String(bytes, offset, bytes.length - offset, StandardCharsets.UTF_8);
+
+			String output = Files.readString(outputFile);
+			if (process.exitValue() != 0) {
+				throw new DownloadException(
+						"The YouTube search failed with exit code %d.".formatted(process.exitValue()),
+						ProcessLogTail.read(outputFile));
+			}
+			return output;
 		}
 		catch (IOException ex) {
-			return "";
+			throw new DownloadException(
+					"Could not start the YouTube search. Make sure yt-dlp is installed.",
+					"Process start error: " + ex.getMessage(),
+					ex);
 		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			throw new DownloadException("The YouTube search was interrupted.", ex);
+		}
+		finally {
+			if (outputFile != null) {
+				try {
+					Files.deleteIfExists(outputFile);
+				}
+				catch (IOException ex) {
+					outputFile.toFile().deleteOnExit();
+				}
+			}
+		}
+	}
+
+	private String readableTimeout(Duration timeout) {
+		if (timeout.toMinutes() >= 1) {
+			return "%d minute%s".formatted(timeout.toMinutes(), timeout.toMinutes() == 1 ? "" : "s");
+		}
+		return "%d second%s".formatted(timeout.toSeconds(), timeout.toSeconds() == 1 ? "" : "s");
 	}
 }
